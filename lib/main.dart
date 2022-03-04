@@ -31,12 +31,12 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.amber,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: Scaffold(
           appBar: AppBar(
-            title: const Text("Amiruddin Fikri Nur 2031710163"),
+            title: const Text("Konversi Suhu\nAmiruddin Fikri Nur 2031710163"),
           ),
           body: Container(
             margin: const EdgeInsets.all(8),
@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
                     "Konversi",
                     style: TextStyle(fontSize: 24),
                   ),
-                  color: Colors.blue,
+                  color: Colors.amber,
                   textColor: Colors.white,
                   minWidth: double.maxFinite,
                   height: 50,
