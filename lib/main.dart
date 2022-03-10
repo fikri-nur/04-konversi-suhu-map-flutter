@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:konversi_suhu_flutter/result.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,8 +17,14 @@ class _MyAppState extends State<MyApp> {
   double _inputUser = 0;
   double _kelvin = 0;
   double _reamur = 0;
+  double _fahrenheit = 0;
 
+  var listItem = ["Kelvin", "Reamur", "Fahrenheit"];
   final temperaturController = TextEditingController();
+  String _newValue = "Kelvin";
+  double _result = 0;
+
+  List<String> listViewItem = <String>[];
 
   @override
   void dispose() {
@@ -41,39 +48,27 @@ class _MyAppState extends State<MyApp> {
           body: Container(
             margin: const EdgeInsets.all(8),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                TextFormField(
-                  controller: temperaturController,
-                  decoration: const InputDecoration(
-                      labelText: 'Masukkan Suhu Dalam Celcius'),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Input(temperaturController: temperaturController),
+                Column(
                   children: [
-                    Column(
-                      children: [
-                        const Text("Suhu Dalam Kelvin"),
-                        Text(
-                          _kelvin.toStringAsFixed(2),
-                          style: const TextStyle(fontSize: 32),
-                        ),
-                      ],
+                    DropdownButton<String>(
+                      items: listItem.map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      value: _newValue,
+                      onChanged: (String? changeValue) {
+                        setState(() {
+                          _newValue = changeValue!;
+                        });
+                        convert();
+                      },
                     ),
-                    Column(
-                      children: [
-                        const Text("Suhu Dalam Reamur"),
-                        Text(
-                          _reamur.toStringAsFixed(2),
-                          style: const TextStyle(fontSize: 32),
-                        ),
-                      ],
-                    )
+                    Result(result: _result)
                   ],
                 ),
                 MaterialButton(
@@ -89,6 +84,23 @@ class _MyAppState extends State<MyApp> {
                   minWidth: double.maxFinite,
                   height: 50,
                 ),
+                Container(
+                  margin: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: const Text(
+                    "Riwayat Konversi",
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                ),
+                Expanded(
+                    child: Column(
+                        children: listViewItem.map((String value) {
+                  return Container(
+                      margin: const EdgeInsets.all(10),
+                      child: Text(
+                        value,
+                        style: const TextStyle(fontSize: 15),
+                      ));
+                }).toList()))
               ],
             ),
           ),
@@ -96,10 +108,37 @@ class _MyAppState extends State<MyApp> {
   }
 
   void convert() {
-    _inputUser = double.parse(temperaturController.text);
     setState(() {
-      _kelvin = _inputUser + 273.15;
-      _reamur = _inputUser * 0.8;
+      _inputUser = double.parse(temperaturController.text);
+
+      if (_newValue == "Kelvin") {
+        _result = _inputUser + 273.15;
+      } else if (_newValue == "Reamur") {
+        _result = 0.8 * _inputUser;
+      } else {
+        _result = (_inputUser * 1.8) + 32;
+      }
+      listViewItem.add(_newValue + ": " + _result.toStringAsFixed(2));
     });
+  }
+}
+
+class Input extends StatelessWidget {
+  const Input({
+    Key? key,
+    required this.temperaturController,
+  }) : super(key: key);
+
+  final TextEditingController temperaturController;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: temperaturController,
+      decoration:
+          const InputDecoration(labelText: 'Masukkan Suhu Dalam Celcius'),
+      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))],
+    );
   }
 }
